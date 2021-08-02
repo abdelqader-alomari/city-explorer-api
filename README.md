@@ -47,3 +47,18 @@ Tools - GitHub, Netlify, Trello, Creatly(block diagrams)
 ## Credit and Collaborations
 
 I make a graph and discuss for first 30 minutes with: Marah Musleh
+
+## Time Estimates
+
+- Feature 1: Set up your server repository.
+
+It took around 2 hours planning + setup server (almost expected)
+
+- Feature 2: Show weather on server (backend):
+
+It took around 5 hours (with huge try and error to solve it!),
+I expect 2 hours not 5 to solve ! it seems it straight forward but it's tricky
+
+- Feature 3: Errors (show clear errors to understand):
+
+  It takes 2 hours as expected.
