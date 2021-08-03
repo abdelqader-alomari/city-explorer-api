@@ -1,4 +1,4 @@
-# Project Name
+# City Explorer
 
 **Author**: Abdelqader Al-Omari
 **Version**: 1.0.2
