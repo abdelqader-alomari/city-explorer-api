@@ -3,12 +3,13 @@
 const express = require('express');
 const server = express();
 
-const weatherData = require('./data/weather.json');
-
 require('dotenv').config();
 const PORT = process.env.PORT
 
 const cors = require('cors');
+server.use(cors());
+
+const axios = require('axios');
 
 class Forecast {
     constructor(day) {
@@ -16,25 +17,53 @@ class Forecast {
         this.description = `Low of ${day.low_temp}, high of ${day.high_temp} with ${day.weather.description}}`;
     }
 }
+class Movie {
+    constructor(movie) {
+        this.title = movie.title
+        this.overview = movie.overview
+        this.average_votes = movie.average_votes
+        this.total_votes = movie.total_votes
+        this.image_url = movie.image_url
+        this.popularity = movie.popularity
+        this.released_on = movie.released_on
+    }
+}
 
-server.get('/', (req, res) => {
-    res.send('Hello from main route');
-});
-server.get('/weather', (req, res) => {
-    res.header("Access-Control-Allow-Origin", "*");
+server.get('/', (req, res) => { res.send('Hello from main route'); });
+
+server.get('/weather', getWeather)
+server.get('/movies', getMovies)
+
+async function getWeather(req, res) {
 
     try {
         let { searchQuery, lat, lon } = req.query;
-        let cityInfo = weatherData.find(element =>
-            element.city_name.toLowerCase() === searchQuery.toLowerCase() ||
-            (element.lat === lat && element.lon === lon) // to search by city or (lat+lon)
-        );
-        if (!cityInfo) res.status(404).send('There is no data to show for this destination');
-        let forecastArr = cityInfo.data.map(info => new Forecast(info));
+        if (!searchQuery) searchQuery = "doesn't match any city"
+        const URL = `https://api.weatherbit.io/v2.0//forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}`
+        let axiosWeather = await axios.get(URL)
+        let forecastArr = axiosWeather.data.data.map(info => new Forecast(info));
         console.log(forecastArr);
         res.send(forecastArr);
     }
-    catch { }
-});
+    catch {
+        res.status(e.status).send({ status: e.status, description: `Unable to Process Request.  Query String Correct? ${e.message}` });
+    }
+};
 
+async function getMovies(req, res) {
+    let returnArr = [];
+    let { city_name } = req.query;
+    const URL = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${city_name}`;
+
+    try {
+        let axiosMovies = await axios.get(URL)
+        console.log(movieApiData.data.results[0], movieApiData.data.results.length);
+        axiosMovies.data.results.map(item => returnArr.push(new Movie(item)));
+        res.status(400).send(returnArr);
+    }
+    catch (error) {
+        res.status(400)
+        if (error.status) res.status(error.status).send(error.message)
+    }
+}
 server.listen(PORT, () => console.log(`listening on ${PORT}`));
