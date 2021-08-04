@@ -21,11 +21,11 @@ class Movie {
     constructor(movie) {
         this.title = movie.title
         this.overview = movie.overview
-        this.average_votes = movie.average_votes
-        this.total_votes = movie.total_votes
-        this.image_url = movie.image_url
+        this.vote_average = movie.vote_average
+        this.vote_count = movie.vote_count
+        this.poster_path = `https://image.tmdb.org/t/p/w500${movie.poster_path}`
         this.popularity = movie.popularity
-        this.released_on = movie.released_on
+        this.release_date = movie.release_date
     }
 }
 
@@ -42,24 +42,24 @@ async function getWeather(req, res) {
         const URL = `https://api.weatherbit.io/v2.0//forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}`
         let axiosWeather = await axios.get(URL)
         let forecastArr = axiosWeather.data.data.map(info => new Forecast(info));
-        console.log(forecastArr);
+        // console.log(forecastArr);
         res.send(forecastArr);
     }
-    catch {
+    catch (e) {
         res.status(e.status).send({ status: e.status, description: `Unable to Process Request.  Query String Correct? ${e.message}` });
     }
 };
 
 async function getMovies(req, res) {
     let returnArr = [];
-    let { city_name } = req.query;
-    const URL = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${city_name}`;
+    let { cityName } = req.query;
+    const URL = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${cityName}`;
 
     try {
         let axiosMovies = await axios.get(URL)
-        console.log(movieApiData.data.results[0], movieApiData.data.results.length);
+        console.log(axiosMovies.data.results);
         axiosMovies.data.results.map(item => returnArr.push(new Movie(item)));
-        res.status(400).send(returnArr);
+        res.status(200).send(returnArr);
     }
     catch (error) {
         res.status(400)
