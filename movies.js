@@ -19,7 +19,7 @@ async function movies(req, res) {
     let moviesArr = [];
     let { cityName } = req.query;
     if (moviesMemory[cityName] !== undefined) {
-        console.log('data from the memory')
+        console.log('Movies data from the memory')
         res.send(moviesMemory[cityName]);
     }
     else {
@@ -28,7 +28,7 @@ async function movies(req, res) {
         try {
             let axiosMovies = await axios.get(URL)
             axiosMovies.data.results.map(item => moviesArr.push(new Movie(item)));
-            console.log('data from the API')
+            console.log('Movies data from the API')
             moviesMemory[cityName] = moviesArr;
             res.status(200).send(moviesArr);
         }
